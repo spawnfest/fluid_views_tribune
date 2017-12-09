@@ -1,0 +1,2 @@
+growth:
+New plant s have popped up all over the DOMINANT_TERRAIN.

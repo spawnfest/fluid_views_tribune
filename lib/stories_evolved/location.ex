@@ -21,20 +21,20 @@ defmodule StoriesEvolved.Location do
   def handle_info(:grow_food, %{type: :jungle, sizes: {_, jungle}} = state) do
     food = :rand.uniform(jungle) == 1
 
-    if food, do: send_grown_message(state.x, state.y)
+    if food, do: send_grown_message(state.x, state.y, :jungle)
     {:noreply, %{state | food: food}}
   end
-  def handle_info(:grow_food, %{type: :step, sizes: {world, _}} = state) do
+  def handle_info(:grow_food, %{type: :steppes, sizes: {world, _}} = state) do
     food = :rand.uniform(world) == 1
 
-    if food, do: send_grown_message(state.x, state.y)
+    if food, do: send_grown_message(state.x, state.y, :steppes)
     {:noreply, %{state | food: food}}
   end
 
-  defp send_grown_message(x, y) do
+  defp send_grown_message(x, y, type) do
     Registry.dispatch(StoriesEvolved.PubSub, :events, fn entries ->
       entries
-      |> Enum.each(fn {pid, _} -> send(pid, {:grown, x, y}) end)
+      |> Enum.each(fn {pid, _} -> send(pid, {:grown, x, y, type}) end)
     end)
   end
 end

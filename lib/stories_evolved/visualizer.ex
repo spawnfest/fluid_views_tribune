@@ -50,7 +50,7 @@ defmodule StoriesEvolved.Visualizer do
   end
 
   def handle_info(
-    {:grown, x, y},
+    {:grown, x, y, _terrain},
     %__MODULE__{locations: locations} = state
   ) do
     new_locations =
