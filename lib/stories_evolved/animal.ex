@@ -36,8 +36,16 @@ defmodule StoriesEvolved.Animal do
        end
   end
 
-  defp reproduce(%{location: {x, y}} = state) do
-    # {:noreply, state}
+  defp reproduce(%{energy: energy} = state) when energy >= 200 do
+    new_state = %{state | energy: round(energy / 2)}
+
+    new_animal = %{new_state | genes: modify_genes(state.genes)}
+
+    {:ok, _} = Supervisor.start_child(StoriesEvolved.AnimalSupervisor, [new_animal])
+
+    {:noreply, new_state}
+  end
+  defp reproduce(state) do
     {:didnt_reproduce, state}
   end
 
@@ -105,5 +113,13 @@ defmodule StoriesEvolved.Animal do
       entries
       |> Enum.each(fn {pid, _} -> send(pid, message) end)
     end)
+  end
+
+  defp modify_genes(genes) do
+    genes
+    |> List.update_at(
+      :rand.uniform(length(genes)),
+      &(max(1, (&1 + :rand.uniform(3) - 1)))
+    )
   end
 end

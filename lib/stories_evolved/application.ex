@@ -4,10 +4,13 @@ defmodule StoriesEvolved.Application do
   use Application
 
   def start(_type, _args) do
-    jungle = {2, 2, 3, 3}
-    height = 10
-    width  = 10
+    jungle = {45, 10, 10, 10}
+    height = 30
+    width  = 100
 
+    # start 16
+    # energy 125
+    # randomize direction / location / genes
     animal = %{
       location: {1, 1},
       dimensions: {width, height},
