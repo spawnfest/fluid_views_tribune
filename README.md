@@ -3,11 +3,11 @@
 ## TODO
 
 * [ ] Build base simulation (Paul)
-    * [ ] Make configurable
+    * [x] Make configurable
     * [ ] Manage simulation startup
     * [ ] Make a process per animal
-    * [ ] Make a process per location
-    * [ ] Have location process manage plant growth
+    * [x] Make a process per location
+    * [x] Have location process manage plant growth
     * [ ] Emit story events
 * [ ] Add ASCII Art visualizer (James)
 * [ ] Tweak simulation
