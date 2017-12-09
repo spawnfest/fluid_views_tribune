@@ -5,13 +5,14 @@ defmodule StoriesEvolved.Application do
 
   def start(_type, _args) do
     jungle = {2, 2, 3, 3}
-    height = 100
-    width  = 30
+    height = 10
+    width  = 10
 
     children = [
-      {Registry, keys: :unique, name: World} |
-      create_locations(height, width, jungle)
-    ]
+      {Registry, keys: :unique, name: StoriesEvolved.World},
+      {Registry, keys: :duplicate, name: StoriesEvolved.PubSub},
+      {StoriesEvolved.Visualizer, {width, height, StoriesEvolved.PubSub}},
+    ] ++ create_locations(height, width, jungle)
 
     opts = [strategy: :one_for_one, name: StoriesEvolved.Supervisor]
     Supervisor.start_link(children, opts)

@@ -3,7 +3,7 @@ defmodule StoriesEvolved.Visualizer do
 
   defstruct ~w[width height locations]a
 
-  def start_link(width, height, registry, tick \\ 1_000) do
+  def start_link({width, height, registry}, tick \\ 1_000) do
     GenServer.start_link(__MODULE__, {width, height, registry, tick})
   end
 
@@ -71,7 +71,7 @@ defmodule StoriesEvolved.Visualizer do
     IO.write IO.ANSI.clear
     Enum.each(0..(height - 1), fn y ->
       Enum.map(0..(width - 1), fn x ->
-        case Map.fetch!({x, y}) do
+        case Map.fetch!(locations, {x, y}) do
           {_has_plant?, animals} when animals > 1 -> "#"
           {_has_plant?, 1} -> "@"
           {true, _animals} -> "*"
