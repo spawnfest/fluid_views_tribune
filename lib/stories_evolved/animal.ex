@@ -3,7 +3,6 @@ defmodule StoriesEvolved.Animal do
   use GenServer
 
   def start_link(state) do
-
     GenServer.start_link(__MODULE__, state)
   end
 

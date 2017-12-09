@@ -7,10 +7,11 @@ defmodule StoriesEvolved.Application do
     jungle = {2, 2, 3, 3}
     height = 10
     width  = 10
+
     animal = %{
-      location: {5,5},
+      location: {1, 1},
       dimensions: {width, height},
-      name: "hiya",
+      name: StoriesEvolved.NameGenerator.generate,
       direction: 0,
       genes: [10,1,1,1,1,1,1,1],
       pubsub: StoriesEvolved.PubSub,
@@ -22,10 +23,12 @@ defmodule StoriesEvolved.Application do
       {Registry, keys: :unique, name: StoriesEvolved.World},
       {Registry, keys: :duplicate, name: StoriesEvolved.PubSub},
       {StoriesEvolved.Visualizer, {width, height, StoriesEvolved.PubSub}},
-      {StoriesEvolved.Animal, animal},
+      {StoriesEvolved.AnimalSupervisor, [ ]},
+      {StoriesEvolved.AnimalSpawnTask, [animal]}
     ] ++ create_locations(height, width, jungle)
 
     opts = [strategy: :one_for_one, name: StoriesEvolved.Supervisor]
+
     Supervisor.start_link(children, opts)
   end
 
