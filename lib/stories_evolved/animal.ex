@@ -39,7 +39,10 @@ defmodule StoriesEvolved.Animal do
   defp reproduce(%{energy: energy} = state) when energy >= 200 do
     new_state = %{state | energy: round(energy / 2)}
 
-    new_animal = %{new_state | genes: modify_genes(state.genes)}
+    new_animal =
+      %{new_state |
+        genes: modify_genes(state.genes),
+        name: StoriesEvolved.NameGenerator.generate(state.name)}
 
     {:ok, _} = Supervisor.start_child(StoriesEvolved.AnimalSupervisor, [new_animal])
 

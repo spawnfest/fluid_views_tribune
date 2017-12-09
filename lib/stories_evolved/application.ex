@@ -8,26 +8,12 @@ defmodule StoriesEvolved.Application do
     height = 30
     width  = 100
 
-    # start 16
-    # energy 125
-    # randomize direction / location / genes
-    animal = %{
-      location: {1, 1},
-      dimensions: {width, height},
-      name: StoriesEvolved.NameGenerator.generate,
-      direction: 0,
-      genes: [10,1,1,1,1,1,1,1],
-      pubsub: StoriesEvolved.PubSub,
-      world: StoriesEvolved.World,
-      energy: 1000
-    }
-
     children = [
       {Registry, keys: :unique, name: StoriesEvolved.World},
       {Registry, keys: :duplicate, name: StoriesEvolved.PubSub},
       {StoriesEvolved.Visualizer, {width, height, StoriesEvolved.PubSub}},
       {StoriesEvolved.AnimalSupervisor, [ ]},
-      {StoriesEvolved.AnimalSpawnTask, [animal]}
+      {StoriesEvolved.AnimalSpawnTask, %{height: height, width: width, count: 8}}
     ] ++ create_locations(height, width, jungle)
 
     opts = [strategy: :one_for_one, name: StoriesEvolved.Supervisor]
