@@ -1,2 +1,12 @@
+drought:
+No rain, no new plant matter.
+Tiny shoots appear but do not flourish.
+The land is hard in the grip of winter.
+regional_growth:
+There's an explosion of growth in the DOMINANT_REGION.
+The DOMINANT_REGION is flush with new growth.
+Fodder in the DOMINANT_REGION calls to the animals.
 growth:
-New plant s have popped up all over the DOMINANT_TERRAIN.
+New plants have popped up all over the DOMINANT_TERRAIN.
+A giant beanstalk has appeared in the DOMINANT_TERRAIN.
+It's the growth seasion in the DOMINANT_TERRAIN.
