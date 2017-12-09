@@ -3,7 +3,10 @@ defmodule StoriesEvolved.Visualizer do
 
   defstruct ~w[width height locations]a
 
-  def start_link({width, height, registry}, tick \\ 1_000) do
+  def start_link({width, height, registry}) do
+    start_link({width, height, registry, 1_000})
+  end
+  def start_link({width, height, registry, tick}) do
     GenServer.start_link(__MODULE__, {width, height, registry, tick})
   end
 

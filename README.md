@@ -9,7 +9,7 @@
     * [x] Make a process per location
     * [x] Have location process manage plant growth
     * [ ] Emit story events
-* [ ] Add ASCII Art visualizer (James)
+* [X] Add ASCII Art visualizer (James)
 * [ ] Tweak simulation
     * [ ] Add sexual reproduction
     * [ ] Add speed and/or preferred action genes
