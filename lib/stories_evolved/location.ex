@@ -15,6 +15,21 @@ defmodule StoriesEvolved.Location do
     {:ok, state}
   end
 
+  def eat(location) do
+    StoriesEvolved.World
+    |> Registry.lookup(location)
+    |> List.first
+    |> elem(0)
+    |> GenServer.call({:eat})
+  end
+
+  def handle_call({:eat}, _from, %{food: false} = state) do
+    {:reply, :no_food, state}
+  end
+  def handle_call({:eat}, _from, %{food: true} = state) do
+    {:reply, :ate_food, %{state | food: false}}
+  end
+
   def handle_info(:grow_food, %{food: true} = state) do
     {:noreply, state}
   end

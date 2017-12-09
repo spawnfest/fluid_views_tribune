@@ -7,11 +7,22 @@ defmodule StoriesEvolved.Application do
     jungle = {2, 2, 3, 3}
     height = 10
     width  = 10
+    animal = %{
+      location: {5,5},
+      dimensions: {width, height},
+      name: "hiya",
+      direction: 0,
+      genes: [10,1,1,1,1,1,1,1],
+      pubsub: StoriesEvolved.PubSub,
+      world: StoriesEvolved.World,
+      energy: 1000
+    }
 
     children = [
       {Registry, keys: :unique, name: StoriesEvolved.World},
       {Registry, keys: :duplicate, name: StoriesEvolved.PubSub},
       {StoriesEvolved.Visualizer, {width, height, StoriesEvolved.PubSub}},
+      {StoriesEvolved.Animal, animal},
     ] ++ create_locations(height, width, jungle)
 
     opts = [strategy: :one_for_one, name: StoriesEvolved.Supervisor]
@@ -46,6 +57,6 @@ defmodule StoriesEvolved.Application do
     :jungle
   end
   defp type(_x, _y, _jungle) do
-    :step
+    :steppes
   end
 end
