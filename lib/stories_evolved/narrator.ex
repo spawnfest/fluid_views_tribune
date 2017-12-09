@@ -29,38 +29,54 @@ defmodule StoriesEvolved.Narrator do
 
   def init({width, height, registry}) do
     Registry.register(registry, :events, nil)
-    :timer.send_interval(3_000, :narrate_growth)
+
+    tick = 1_000
+    Process.send_after(self(), :narrate_dawn_of_time, 2 * tick)
+    :timer.send_interval(3 * tick, :narrate_growth)
+
     {:ok, %__MODULE__{width: width, height: height, history: Map.new}}
   end
 
-  # def handle_info(
-  #   {:born, _name, x, y, _parent_names},
-  #   %__MODULE__{history: history} = state
-  # ) do
-  #   new_history =
-  #     Map.update!(history, {x, y}, &{elem(&1, 0), elem(&1, 1) + 1})
-  #   {:noreply, %__MODULE__{state | history: new_history}}
-  # end
+  def handle_info(
+    {:born, name, _x, _y, [ ]},
+    %__MODULE__{history: history} = state
+  ) do
+    new_history = Map.update(history, :births, [name], &[name | &1])
+    {:noreply, %__MODULE__{state | history: new_history}}
+  end
+  def handle_info({:born, name, _x, _y, [parent_name]}, state) do
+    narrate(
+      "asexual_birth",
+      %{name: Enum.join(name, " "), parent_name: Enum.join(parent_name, " ")}
+    )
+    {:noreply, state}
+  end
+  def handle_info(
+    {:born, name, _x, _y, [parent_1_name, parent_2_name]},
+    state
+  ) do
+    narrate(
+      "sexual_birth",
+      %{
+        name: Enum.join(name, " "),
+        parent_1_name: Enum.join(parent_1_name, " "),
+        parent_2_name: Enum.join(parent_2_name, " ")
+      }
+    )
+    {:noreply, state}
+  end
 
-  # def handle_info(
-  #   {:died, _name, x, y},
-  #   %__MODULE__{history: history} = state
-  # ) do
-  #   new_history =
-  #     Map.update!(history, {x, y}, &{elem(&1, 0), elem(&1, 1) - 1})
-  #   {:noreply, %__MODULE__{state | history: new_history}}
-  # end
+  def handle_info({:died, name, _x, _y}, state) do
+    narrate("death", %{name: Enum.join(name, " ")})
+    {:noreply, state}
+  end
 
-  # def handle_info(
-  #   {:moved, _name, from_x, from_y, to_x, to_y},
-  #   %__MODULE__{history: history} = state
-  # ) do
-  #   new_history =
-  #     history
-  #     |> Map.update!({from_x, from_y}, &{elem(&1, 0), elem(&1, 1) - 1})
-  #     |> Map.update!({to_x, to_y}, &{elem(&1, 0), elem(&1, 1) + 1})
-  #   {:noreply, %__MODULE__{state | history: new_history}}
-  # end
+  def handle_info(
+    {:moved, _name, from_x, from_y, to_x, to_y},
+    %__MODULE__{history: history} = state
+  ) do
+    {:noreply, state}
+  end
 
   def handle_info(
     {:grown, x, y, terrain},
@@ -71,6 +87,25 @@ defmodule StoriesEvolved.Narrator do
       |> Map.update(:plants, 1, &(&1 + 1))
       |> Map.update(terrain, 1, &(&1 + 1))
       |> Map.update(region(x, y, width, height), 1, &(&1 + 1))
+    {:noreply, %__MODULE__{state | history: new_history}}
+  end
+
+  def handle_info(
+    :narrate_dawn_of_time,
+    %__MODULE__{history: history} = state
+  ) do
+    births =
+      history
+      |> Map.get(:births, [ ])
+      |> Enum.map(fn name -> Enum.join(name, " ") end)
+      |> Enum.join(", ")
+      |> String.replace(~r{\A(.+),\s}, "\\1 and ")
+
+    if String.length(births) > 0 do
+      narrate("dawn_of_time", %{births: births})
+    end
+
+    new_history = Map.delete(history, :births)
     {:noreply, %__MODULE__{state | history: new_history}}
   end
 
@@ -130,14 +165,12 @@ defmodule StoriesEvolved.Narrator do
     {:noreply, %__MODULE__{state | history: new_history}}
   end
 
-  # def handle_info(
-  #   {:eaten, _name, x, y},
-  #   %__MODULE__{history: history} = state
-  # ) do
-  #   new_history =
-  #     Map.update!(history, {x, y}, &{false, elem(&1, 1)})
-  #   {:noreply, %__MODULE__{state | history: new_history}}
-  # end
+  def handle_info(
+    {:eaten, _name, x, y},
+    %__MODULE__{history: history} = state
+  ) do
+    {:noreply, state}
+  end
 
   defp region(x, y, width, height)
   when x < width / 4 and y < height / 4,
@@ -172,19 +205,19 @@ defmodule StoriesEvolved.Narrator do
       |> Map.fetch!(event)
       |> Enum.random
     Regex.replace(
-      ~r{\b(?:TERRAIN|DOMINANT_TERRAIN|DOMINANT_REGION)\b},
+      ~r{
+        \b (?:
+        BIRTHS | NAME | PARENT_NAME | PARENT_1_NAME | PARENT_2_NAME |
+        TERRAIN | DOMINANT_TERRAIN | DOMINANT_REGION
+        ) \b
+      }x,
       template,
-      &expand(&1, details),
+      &(
+        Map.fetch!(details, &1 |> String.downcase |> String.to_existing_atom)
+        |> to_string()
+      ),
       global: true
     )
     |> IO.puts
-  end
-
-  defp expand("TERRAIN", %{terrain: terrain}), do: to_string(terrain)
-  defp expand("DOMINANT_TERRAIN", %{dominant_terrain: dominant_terrain}) do
-    dominant_terrain
-  end
-  defp expand("DOMINANT_REGION", %{dominant_region: dominant_region}) do
-    dominant_region
   end
 end
