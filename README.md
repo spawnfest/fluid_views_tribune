@@ -39,15 +39,15 @@ Instead, we decided to weave a story from the simulated events.  Each time an an
 
 The narration code serves this role.  It aggregates and summarizes plant growth, it announces births and deaths, and it semi-intelligently combines an animal's activity to turn consectutive moves or meals into journeys from region to region or feasts.  Most importantly though, it injects plenty of whimsy.  For example, behold this tale of urban development:
 
-> Rhythmic Ashy Building desperately searches for food in central region.
+> Rhythmic Ashy Building desperately searches for food in the central region.
 > Rhythmic Ashy Building locates a meal in the jungle.
 > Incalculable Lemon Building springs fully formed from the head of 
 > Rhythmic Ashy Building.
-> Most Ashy Building is wandering aimlessly through central region.
+> Most Ashy Building is wandering aimlessly through the central region.
 > Most Ashy Building locates a meal in the jungle.
 > Thousands Ashy Building springs fully formed from the head of 
 > Most Ashy Building.
-> Rhythmic Ashy Building desperately searches for food in central region.
+> Rhythmic Ashy Building desperately searches for food in the central region.
 > Most Ashy Building moves a few steps to wind up essentially back where 
 > they started.
 > After consuming everything in sight, Most Ashy Building is ready for 
