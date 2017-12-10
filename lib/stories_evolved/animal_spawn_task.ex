@@ -12,7 +12,7 @@ defmodule StoriesEvolved.AnimalSpawnTask do
         dimensions: {width, height},
         name: StoriesEvolved.NameGenerator.generate,
         direction: :rand.uniform(8) - 1,
-        genes: initial_genes,
+        genes: initial_genes(),
         pubsub: StoriesEvolved.PubSub,
         world: StoriesEvolved.World,
         parents: [],

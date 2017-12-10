@@ -81,7 +81,7 @@ defmodule StoriesEvolved.Animal do
     1 + pick_angle((total - hd), tail)
   end
 
-  defp move(%{location: {x, y}, dimensions: {w, h}}, 0) do
+  defp move(%{location: {x, y}, dimensions: {_w, h}}, 0) do
     {x, rem((y - 1 + h), h)}
   end
   defp move(%{location: {x, y}, dimensions: {w, h}}, 1) do
@@ -93,7 +93,7 @@ defmodule StoriesEvolved.Animal do
   defp move(%{location: {x, y}, dimensions: {w, h}}, 3) do
     {rem((x + 1 + w), w), rem((y + 1 + h), h)}
   end
-  defp move(%{location: {x, y}, dimensions: {w, h}}, 4) do
+  defp move(%{location: {x, y}, dimensions: {_w, h}}, 4) do
     {x, rem((y + 1 + h), h)}
   end
   defp move(%{location: {x, y}, dimensions: {w, h}}, 5) do

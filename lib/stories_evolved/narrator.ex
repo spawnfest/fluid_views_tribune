@@ -72,8 +72,8 @@ defmodule StoriesEvolved.Narrator do
   end
 
   def handle_info(
-    {:moved, _name, from_x, from_y, to_x, to_y},
-    %__MODULE__{history: history} = state
+    {:moved, _name, _from_x, _from_y, _to_x, _to_y},
+    %__MODULE__{history: _history} = state
   ) do
     {:noreply, state}
   end
@@ -88,6 +88,13 @@ defmodule StoriesEvolved.Narrator do
       |> Map.update(terrain, 1, &(&1 + 1))
       |> Map.update(region(x, y, width, height), 1, &(&1 + 1))
     {:noreply, %__MODULE__{state | history: new_history}}
+  end
+
+  def handle_info(
+    {:eaten, _name, _x, _y},
+    %__MODULE__{history: _history} = state
+  ) do
+    {:noreply, state}
   end
 
   def handle_info(
@@ -144,7 +151,7 @@ defmodule StoriesEvolved.Narrator do
             north > plants / 2 -> "north"
             south > plants / 2 -> "south"
             west > plants / 2 -> "west"
-            center > plants / 2 -> "centeral region"
+            center > plants / 2 -> "central region"
             true -> nil
           end
 
@@ -163,13 +170,6 @@ defmodule StoriesEvolved.Narrator do
       end
 
     {:noreply, %__MODULE__{state | history: new_history}}
-  end
-
-  def handle_info(
-    {:eaten, _name, x, y},
-    %__MODULE__{history: history} = state
-  ) do
-    {:noreply, state}
   end
 
   defp region(x, y, width, height)
