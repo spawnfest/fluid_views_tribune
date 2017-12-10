@@ -11,7 +11,7 @@ defmodule StoriesEvolved.Application do
     children = [
       {Registry, keys: :unique, name: StoriesEvolved.World},
       {Registry, keys: :duplicate, name: StoriesEvolved.PubSub},
-      {StoriesEvolved.Visualizer, {width, height, StoriesEvolved.PubSub}},
+      {interface, {width, height, StoriesEvolved.PubSub}},
       {StoriesEvolved.AnimalSupervisor, [ ]},
       {StoriesEvolved.AnimalSpawnTask, %{height: height, width: width, count: 8}}
     ] ++ create_locations(height, width, jungle)
@@ -50,5 +50,13 @@ defmodule StoriesEvolved.Application do
   end
   defp type(_x, _y, _jungle) do
     :steppes
+  end
+
+  defp interface do
+    if System.get_env("VISUAL") do
+      StoriesEvolved.Visualizer
+    else
+      StoriesEvolved.Narrator
+    end
   end
 end

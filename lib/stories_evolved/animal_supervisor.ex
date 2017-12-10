@@ -20,6 +20,7 @@ defmodule StoriesEvolved.AnimalSupervisor do
   defp base_spec do
     Supervisor.child_spec(
       Animal,
+      restart: :transient,
       start:   {Animal, :start_link, [ ]}
     )
   end
