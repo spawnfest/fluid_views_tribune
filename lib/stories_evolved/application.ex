@@ -11,7 +11,7 @@ defmodule StoriesEvolved.Application do
     children = [
       {Registry, keys: :unique, name: StoriesEvolved.World},
       {Registry, keys: :duplicate, name: StoriesEvolved.PubSub},
-      {interface, {width, height, StoriesEvolved.PubSub}},
+      {interface(), {width, height, StoriesEvolved.PubSub}},
       {StoriesEvolved.AnimalSupervisor, [ ]},
       {StoriesEvolved.AnimalSpawnTask, %{height: height, width: width, count: 8}}
     ] ++ create_locations(height, width, jungle)

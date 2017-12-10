@@ -28,9 +28,17 @@ A giant beanstalk has appeared in the DOMINANT_TERRAIN.
 It's the growth season in the DOMINANT_TERRAIN.
 big_eat:
 NAME gorges every green thing in sight.
+NAME chows down in the TERRAIN.
+After consuming everything in sight, NAME is ready for the hard work of reproduction.
 eat:
 NAME stops off for a light snack.
+NAME performs a walk-by-eating.
+NAME locates a meal in the TERRAIN.
 journey:
-NAME took a long journey to TO_REGION.
+NAME took a journey to TO_REGION.
+NAME has traveled DISTANCE to wind up in the TO_REGION.
+NAME has reached a strange new land.
 wandering:
 NAME is wandering aimlessly through TO_REGION.
+NAME moves DISTANCE to wind up essentially back where they started.
+NAME desperately searches for food in TO_REGION.

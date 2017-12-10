@@ -31,8 +31,8 @@ defmodule StoriesEvolved.Narrator do
     Registry.register(registry, :events, nil)
 
     tick = 1_000
-    Process.send_after(self(), :narrate_dawn_of_time, 2 * tick)
-    :timer.send_interval(3 * tick, :narrate_growth)
+    Process.send_after(self(), :narrate_dawn_of_time, div(tick, 2))
+    :timer.send_interval(10 * tick, :narrate_growth)
 
     {:ok, %__MODULE__{width: width, height: height, history: Map.new}}
   end
@@ -49,7 +49,12 @@ defmodule StoriesEvolved.Narrator do
     %__MODULE__{width: width, height: height, history: history} = state
   ) do
     new_history =
-      Map.update(history, parent_name, [ ], &flush_events([:flush | &1], width, height))
+      Map.update(
+        history,
+        parent_name,
+        [ ],
+        &flush_events([:flush | &1], width, height)
+      )
 
     narrate(
       "asexual_birth",
@@ -64,8 +69,16 @@ defmodule StoriesEvolved.Narrator do
   ) do
     new_history =
       history
-      |> Map.update(parent_1_name, [ ], &flush_events([:flush | &1], width, height))
-      |> Map.update(parent_2_name, [ ], &flush_events([:flush | &1], width, height))
+      |> Map.update(
+        parent_1_name,
+        [ ],
+        &flush_events([:flush | &1], width, height)
+      )
+      |> Map.update(
+        parent_2_name,
+        [ ],
+        &flush_events([:flush | &1], width, height)
+      )
 
     narrate(
       "sexual_birth",
@@ -95,7 +108,12 @@ defmodule StoriesEvolved.Narrator do
     %__MODULE__{width: width, height: height, history: history} = state
   ) do
     new_history =
-      Map.update(history, name, [event], &flush_events([event | &1], width, height))
+      Map.update(
+        history,
+        name,
+        [event],
+        &flush_events([event | &1], width, height)
+      )
     {:noreply, %__MODULE__{state | history: new_history}}
   end
 
@@ -112,11 +130,16 @@ defmodule StoriesEvolved.Narrator do
   end
 
   def handle_info(
-    {:eaten, name, _x, _y} = event,
+    {:eaten, name, _x, _y, _terrain} = event,
     %__MODULE__{width: width, height: height, history: history} = state
   ) do
     new_history =
-      Map.update(history, name, [event], &flush_events([event | &1], width, height))
+      Map.update(
+        history,
+        name,
+        [event],
+        &flush_events([event | &1], width, height)
+      )
     {:noreply, %__MODULE__{state | history: new_history}}
   end
 
@@ -142,7 +165,7 @@ defmodule StoriesEvolved.Narrator do
   def handle_info(:narrate_growth, %__MODULE__{history: history} = state) do
     plants = Map.get(history, :plants, 0)
     new_history =
-      if plants < 3 do
+      if plants < 10 do
         narrate("drought", Map.new)
 
         history
@@ -212,11 +235,15 @@ defmodule StoriesEvolved.Narrator do
   end
 
   defp narrate_in_chunks([ ], _width, _height), do: [ ]
-  defp narrate_in_chunks([{:eaten, name, _x, _y} | events], width, height) do
+  defp narrate_in_chunks(
+    [{:eaten, name, _x, _y, terrain} | events],
+    width,
+    height
+  ) do
     {count, remaining_events} =
       count_nearby_eats(events, 1)
 
-    context = %{name: Enum.join(name, " ")}
+    context = %{name: Enum.join(name, " "), terrain: terrain}
     if count > 1 do
       narrate("big_eat", context)
     else
@@ -232,12 +259,28 @@ defmodule StoriesEvolved.Narrator do
       Enum.split_while(events, fn event -> elem(event, 0) == :moved end)
 
     {:moved, ^name, _from_x, _from_y, to_x, to_y} = List.last(moves)
-    from_region = region(from_x, from_y, width, height)
-    to_region = region(to_x, to_y, width, height)
+    from_region =
+      case region(from_x, from_y, width, height) do
+        :center -> "central region"
+        region -> region
+      end
+    to_region =
+      case region(to_x, to_y, width, height) do
+        :center -> "central region"
+        region -> region
+      end
+    count = length(moves) + 1
+    distance =
+      cond do
+        count > 30 -> "a great distance"
+        count < 5 -> "a few steps"
+        true -> "for a time"
+      end
     context = %{
       name: Enum.join(name, " "),
       from_region: from_region,
-      to_region: to_region
+      to_region: to_region,
+      distance: distance
     }
     if from_region != to_region do
       narrate("journey", context)
@@ -248,13 +291,16 @@ defmodule StoriesEvolved.Narrator do
     narrate_in_chunks(remaining_events, width, height)
   end
 
-  defp count_nearby_eats([{:eaten, _name, _x, _y} | events], count) do
+  defp count_nearby_eats(
+    [{:eaten, _name, _x, _y, _terrain} | events],
+    count
+  ) do
     count_nearby_eats(events, count + 1)
   end
   defp count_nearby_eats(
     [
       {:moved, name, _from_x, _from_y, _x_1, _y_1},
-      {:eaten, name, _x_2, _y_2} |
+      {:eaten, name, _x_2, _y_2, _terrain} |
       events
     ], count
   ) do
@@ -264,7 +310,7 @@ defmodule StoriesEvolved.Narrator do
     [
       {:moved, name, _from_x_1, _from_y_1, _x_1, _y_1},
       {:moved, name, _from_x_2, _from_y_2, _x_2, _y_2},
-      {:eaten, name, _x_3, _y_3} |
+      {:eaten, name, _x_3, _y_3, _terrain} |
       events
     ], count
   ) do
@@ -308,7 +354,8 @@ defmodule StoriesEvolved.Narrator do
       ~r{
         \b (?:
         BIRTHS | NAME | PARENT_NAME | PARENT_1_NAME | PARENT_2_NAME |
-        TERRAIN | DOMINANT_TERRAIN | DOMINANT_REGION | FROM_REGION | TO_REGION
+        TERRAIN | DOMINANT_TERRAIN | DOMINANT_REGION |
+        FROM_REGION | TO_REGION | DISTANCE
         ) \b
       }x,
       template,

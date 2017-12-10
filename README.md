@@ -33,7 +33,7 @@
 * Animal died:  `{:died, name, x, y}`
 * Animal moved:  `{:moved, name, from_x, from_y, to_x, to_y}`
 * Plant grown:  `{:grown, x, y, terrain}`
-* Plant eaten:  `{:eaten, name, x, y}`
+* Plant eaten:  `{:eaten, name, x, y, terrain}`
 
 ## Credit
 

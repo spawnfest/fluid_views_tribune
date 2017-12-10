@@ -30,8 +30,8 @@ defmodule StoriesEvolved.Animal do
     |> case do
          :no_food  ->
            {:didnt_eat, state}
-         :ate_food ->
-           message_dispatch(state.pubsub, {:eaten, state.name, x, y})
+         {:ate_food, terrain} ->
+           message_dispatch(state.pubsub, {:eaten, state.name, x, y, terrain})
            {:noreply, %{state | energy: state.energy + 80}}
        end
   end
