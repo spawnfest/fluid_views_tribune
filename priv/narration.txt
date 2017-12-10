@@ -26,3 +26,11 @@ growth:
 New plants have popped up all over the DOMINANT_TERRAIN.
 A giant beanstalk has appeared in the DOMINANT_TERRAIN.
 It's the growth season in the DOMINANT_TERRAIN.
+big_eat:
+NAME gorges every green thing in sight.
+eat:
+NAME stops off for a light snack.
+journey:
+NAME took a long journey to TO_REGION.
+wandering:
+NAME is wandering aimlessly through TO_REGION.

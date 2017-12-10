@@ -44,17 +44,29 @@ defmodule StoriesEvolved.Narrator do
     new_history = Map.update(history, :births, [name], &[name | &1])
     {:noreply, %__MODULE__{state | history: new_history}}
   end
-  def handle_info({:born, name, _x, _y, [parent_name]}, state) do
+  def handle_info(
+    {:born, name, _x, _y, [parent_name]},
+    %__MODULE__{width: width, height: height, history: history} = state
+  ) do
+    new_history =
+      Map.update(history, parent_name, [ ], &flush_events([:flush | &1], width, height))
+
     narrate(
       "asexual_birth",
       %{name: Enum.join(name, " "), parent_name: Enum.join(parent_name, " ")}
     )
-    {:noreply, state}
+
+    {:noreply, %__MODULE__{state | history: new_history}}
   end
   def handle_info(
     {:born, name, _x, _y, [parent_1_name, parent_2_name]},
-    state
+    %__MODULE__{width: width, height: height, history: history} = state
   ) do
+    new_history =
+      history
+      |> Map.update(parent_1_name, [ ], &flush_events([:flush | &1], width, height))
+      |> Map.update(parent_2_name, [ ], &flush_events([:flush | &1], width, height))
+
     narrate(
       "sexual_birth",
       %{
@@ -63,19 +75,28 @@ defmodule StoriesEvolved.Narrator do
         parent_2_name: Enum.join(parent_2_name, " ")
       }
     )
-    {:noreply, state}
-  end
 
-  def handle_info({:died, name, _x, _y}, state) do
-    narrate("death", %{name: Enum.join(name, " ")})
-    {:noreply, state}
+    {:noreply, %__MODULE__{state | history: new_history}}
   end
 
   def handle_info(
-    {:moved, _name, _from_x, _from_y, _to_x, _to_y},
-    %__MODULE__{history: _history} = state
+    {:died, name, _x, _y},
+    %__MODULE__{width: width, height: height, history: history} = state
   ) do
-    {:noreply, state}
+    flush_events([:flush | Map.get(history, name, [ ])], width, height)
+    narrate("death", %{name: Enum.join(name, " ")})
+
+    new_history = Map.delete(history, name)
+    {:noreply, %__MODULE__{state | history: new_history}}
+  end
+
+  def handle_info(
+    {:moved, name, _from_x, _from_y, _to_x, _to_y} = event,
+    %__MODULE__{width: width, height: height, history: history} = state
+  ) do
+    new_history =
+      Map.update(history, name, [event], &flush_events([event | &1], width, height))
+    {:noreply, %__MODULE__{state | history: new_history}}
   end
 
   def handle_info(
@@ -91,10 +112,12 @@ defmodule StoriesEvolved.Narrator do
   end
 
   def handle_info(
-    {:eaten, _name, _x, _y},
-    %__MODULE__{history: _history} = state
+    {:eaten, name, _x, _y} = event,
+    %__MODULE__{width: width, height: height, history: history} = state
   ) do
-    {:noreply, state}
+    new_history =
+      Map.update(history, name, [event], &flush_events([event | &1], width, height))
+    {:noreply, %__MODULE__{state | history: new_history}}
   end
 
   def handle_info(
@@ -172,6 +195,83 @@ defmodule StoriesEvolved.Narrator do
     {:noreply, %__MODULE__{state | history: new_history}}
   end
 
+  defp flush_events([ ], _width, _height), do: [ ]
+  defp flush_events([:flush | events], width, height) do
+    events
+    |> Enum.reverse
+    |> narrate_in_chunks(width, height)
+  end
+  defp flush_events(events, width, height) do
+    first_four = events |> Enum.take(4) |> Enum.map(&elem(&1, 0))
+    if first_four == ~w[eaten moved moved moved]a do
+      events |> Enum.drop(1) |> narrate_in_chunks(width, height)
+      [hd(events)]
+    else
+      events
+    end
+  end
+
+  defp narrate_in_chunks([ ], _width, _height), do: [ ]
+  defp narrate_in_chunks([{:eaten, name, _x, _y} | events], width, height) do
+    {count, remaining_events} =
+      count_nearby_eats(events, 1)
+
+    context = %{name: Enum.join(name, " ")}
+    if count > 1 do
+      narrate("big_eat", context)
+    else
+      narrate("eat", context)
+    end
+
+    narrate_in_chunks(remaining_events, width, height)
+  end
+  defp narrate_in_chunks(
+    [{:moved, name, from_x, from_y, _x, _y} | events], width, height
+  ) do
+    {moves, remaining_events} =
+      Enum.split_while(events, fn event -> elem(event, 0) == :moved end)
+
+    {:moved, ^name, _from_x, _from_y, to_x, to_y} = List.last(moves)
+    from_region = region(from_x, from_y, width, height)
+    to_region = region(to_x, to_y, width, height)
+    context = %{
+      name: Enum.join(name, " "),
+      from_region: from_region,
+      to_region: to_region
+    }
+    if from_region != to_region do
+      narrate("journey", context)
+    else
+      narrate("wandering", context)
+    end
+
+    narrate_in_chunks(remaining_events, width, height)
+  end
+
+  defp count_nearby_eats([{:eaten, _name, _x, _y} | events], count) do
+    count_nearby_eats(events, count + 1)
+  end
+  defp count_nearby_eats(
+    [
+      {:moved, name, _from_x, _from_y, _x_1, _y_1},
+      {:eaten, name, _x_2, _y_2} |
+      events
+    ], count
+  ) do
+    count_nearby_eats(events, count + 1)
+  end
+  defp count_nearby_eats(
+    [
+      {:moved, name, _from_x_1, _from_y_1, _x_1, _y_1},
+      {:moved, name, _from_x_2, _from_y_2, _x_2, _y_2},
+      {:eaten, name, _x_3, _y_3} |
+      events
+    ], count
+  ) do
+    count_nearby_eats(events, count + 1)
+  end
+  defp count_nearby_eats(events, count), do: {count, events}
+
   defp region(x, y, width, height)
   when x < width / 4 and y < height / 4,
     do: :northeast
@@ -208,7 +308,7 @@ defmodule StoriesEvolved.Narrator do
       ~r{
         \b (?:
         BIRTHS | NAME | PARENT_NAME | PARENT_1_NAME | PARENT_2_NAME |
-        TERRAIN | DOMINANT_TERRAIN | DOMINANT_REGION
+        TERRAIN | DOMINANT_TERRAIN | DOMINANT_REGION | FROM_REGION | TO_REGION
         ) \b
       }x,
       template,

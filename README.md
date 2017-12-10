@@ -2,13 +2,13 @@
 
 ## TODO
 
-* [ ] Build base simulation (Paul)
+* [x] Build base simulation (Paul)
     * [x] Make configurable
-    * [ ] Manage simulation startup
-    * [ ] Make a process per animal
+    * [x] Manage simulation startup
+    * [x] Make a process per animal
     * [x] Make a process per location
     * [x] Have location process manage plant growth
-    * [ ] Emit story events
+    * [x] Emit story events
 * [X] Add ASCII Art visualizer (James)
 * [ ] Tweak simulation
     * [ ] Add sexual reproduction
@@ -18,8 +18,8 @@
     * [X] Use dictionary to form names
     * [X] Handle lineage
 * [ ] Add "Story Teller" (James)
-    * [ ] Add flare:  "Stray Dog has finally croaked."
-    * [ ] Combine repative events
+    * [X] Add flare:  "Stray Dog has finally croaked."
+    * [X] Combine repative events
     * [ ] Use context (two animals arriving at the same local) to narrate
     * [ ] Enhance story with lineage
     * [ ] Comment on lifespans
@@ -36,6 +36,10 @@
 * Plant eaten:  `{:eaten, name, x, y}`
 
 ## Credit
+
+The simulation is inspired from an exercise in Land of Lisp:
+
+http://landoflisp.com/
 
 A random list of adjectives was borrowed from:
 
