@@ -33,7 +33,27 @@ When an animal reproduces, its offspring is a copy of the parent. The child  wil
 
 ### Narration
 
+We figured out that we wanted to build a simulation first, but we also wanted to do some form of non-traditional interface.  We considered things like pixel-based output to a Raspberry Pi screen among other things, but those options felt a little out of reach for the time we had.
 
+Instead, we decided to weave a story from the simulated events.  Each time an animal is born, a plant grows, the former eats the latter, etc. the system generates an event.  Those events can power things like our ASCII art visualizer, but they can also be molded into a story.
+
+The narration code serves this role.  It aggregates and summarizes plant growth, it announces births and deaths, and it semi-intelligently combines an animal's activity to turn consectutive moves or meals into journeys from region to region or feasts.  Most importantly though, it injects plenty of whimsy.  For example, behold this tale of urban development:
+
+> Rhythmic Ashy Building desperately searches for food in central region.
+> Rhythmic Ashy Building locates a meal in the jungle.
+> Incalculable Lemon Building springs fully formed from the head of 
+> Rhythmic Ashy Building.
+> Most Ashy Building is wandering aimlessly through central region.
+> Most Ashy Building locates a meal in the jungle.
+> Thousands Ashy Building springs fully formed from the head of 
+> Most Ashy Building.
+> Rhythmic Ashy Building desperately searches for food in central region.
+> Most Ashy Building moves a few steps to wind up essentially back where 
+> they started.
+> After consuming everything in sight, Most Ashy Building is ready for 
+> the hard work of reproduction.
+> Most Ashy Building's arm falls off and grows into another animal called 
+> Colossal Ashy Building.
 
 ## Credit
 
