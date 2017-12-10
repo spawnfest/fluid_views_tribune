@@ -8,13 +8,43 @@ defmodule StoriesEvolved.Application do
     height = 30
     width  = 100
 
+    interface =
+      case output_mode() do
+        :narrator_only ->
+          [
+            {
+              StoriesEvolved.Narrator,
+              {width, height, StoriesEvolved.PubSub, &IO.puts/1}
+            }
+          ]
+        {:narrator_and_visualizer, columns} ->
+          [
+            {
+              StoriesEvolved.Visualizer,
+              {width, height, StoriesEvolved.PubSub, columns}
+            },
+            {
+              StoriesEvolved.Narrator,
+              {
+                width,
+                height,
+                StoriesEvolved.PubSub,
+                fn line -> send(StoriesEvolved.Visualizer, {:story, line}) end
+              }
+            }
+          ]
+      end
+
     children = [
       {Registry, keys: :unique, name: StoriesEvolved.World},
-      {Registry, keys: :duplicate, name: StoriesEvolved.PubSub},
-      {interface(), {width, height, StoriesEvolved.PubSub}},
+      {Registry, keys: :duplicate, name: StoriesEvolved.PubSub}
+    ] ++
+    interface ++
+    [
       {StoriesEvolved.AnimalSupervisor, [ ]},
       {StoriesEvolved.AnimalSpawnTask, %{height: height, width: width, count: 8}}
-    ] ++ create_locations(height, width, jungle)
+    ] ++
+    create_locations(height, width, jungle)
 
     opts = [strategy: :one_for_one, name: StoriesEvolved.Supervisor]
 
@@ -52,11 +82,18 @@ defmodule StoriesEvolved.Application do
     :steppes
   end
 
-  defp interface do
-    if System.get_env("VISUAL") do
-      StoriesEvolved.Visualizer
-    else
-      StoriesEvolved.Narrator
+  defp output_mode do
+    case {System.cmd("tput", ~w[cols]), System.cmd("tput", ~w[lines])} do
+      {{cols, 0}, {lines, 0}} ->
+        with {width, _rest} when width >= 120 <- Integer.parse(cols),
+             {height, _rest} when height >= 31 <- Integer.parse(lines)do
+          {:narrator_and_visualizer, width}
+        else
+          _error ->
+            :narrator_only
+        end
+      _sizes ->
+        :narrator_only
     end
   end
 end
