@@ -21,11 +21,15 @@ Build Dependencies: Elixir 1.5.2
 
 ### Locations
 
-Locations are GenServers that represent an x/y coordinate on the map. A Location manages its own plant growth based on its biome type, jungle or steppes, and communicates events to the PubSub Registry.
+Locations represent an x/y coordinate on the map. A Location manages its own plant growth based on its biome type, jungle, or steppes and communicates events to the PubSub Registry.
 
 ### Animals
 
-Animals are born with a random set of genes (used for turning) and a random name (used for linage tracking / reproduction). An animal communicates with a Location via the World Registry, and also publishes live events to the PubSub Registry.
+Animals are born with a random set of genes (used for turning) and a random name (used for linage tracking / reproduction). An animal can communicate with a Location via the World Registry to check for food. An animal will also publish its life events to the PubSub Registry.
+
+On each tick an animal will attempt to eat. If there is no food it will try to reproduce. If it does not have enough energy for reproduction the animal will rotate (based on its genes) and move one.
+
+When an animal reproduces, its offspring is a copy of the parent. The child  will have a mutated gene and a newly generated name based on the parent's name.
 
 ### Narration
 
