@@ -15,6 +15,7 @@ defmodule StoriesEvolved.AnimalSpawnTask do
         genes: initial_genes,
         pubsub: StoriesEvolved.PubSub,
         world: StoriesEvolved.World,
+        parents: [],
         energy: 125
   }
     end)

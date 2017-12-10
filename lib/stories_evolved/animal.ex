@@ -8,7 +8,7 @@ defmodule StoriesEvolved.Animal do
 
   def init(state) do
     {x, y} = state.location
-    message_dispatch(state.pubsub, {:born, state.name, x, y, []})
+    message_dispatch(state.pubsub, {:born, state.name, x, y, state.parents})
 
     :timer.send_interval(1_000, :tick)
     {:ok, state}
@@ -42,7 +42,8 @@ defmodule StoriesEvolved.Animal do
     new_animal =
       %{new_state |
         genes: modify_genes(state.genes),
-        name: StoriesEvolved.NameGenerator.generate(state.name)}
+        name: StoriesEvolved.NameGenerator.generate(state.name),
+        parents: [state.name | state.parents]}
 
     {:ok, _} = Supervisor.start_child(StoriesEvolved.AnimalSupervisor, [new_animal])
 
