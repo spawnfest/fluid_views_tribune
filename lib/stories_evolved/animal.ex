@@ -43,7 +43,7 @@ defmodule StoriesEvolved.Animal do
       %{new_state |
         genes: modify_genes(state.genes),
         name: StoriesEvolved.NameGenerator.generate(state.name),
-        parents: [state.name | state.parents]}
+        parents: [state.name]}
 
     {:ok, _} = Supervisor.start_child(StoriesEvolved.AnimalSupervisor, [new_animal])
 
