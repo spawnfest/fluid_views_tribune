@@ -253,12 +253,18 @@ defmodule StoriesEvolved.Narrator do
     narrate_in_chunks(remaining_events, width, height)
   end
   defp narrate_in_chunks(
-    [{:moved, name, from_x, from_y, _x, _y} | events], width, height
+    [{:moved, name, from_x, from_y, x, y} | events], width, height
   ) do
     {moves, remaining_events} =
       Enum.split_while(events, fn event -> elem(event, 0) == :moved end)
 
-    {:moved, ^name, _from_x, _from_y, to_x, to_y} = List.last(moves)
+    {to_x, to_y} =
+      case List.last(moves) do
+        nil ->
+          {x, y}
+        {:moved, ^name, _from_x, _from_y, last_to_x, last_to_y} ->
+          {last_to_x, last_to_y}
+      end
     from_region =
       case region(from_x, from_y, width, height) do
         :center -> "central region"
