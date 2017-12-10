@@ -29,7 +29,7 @@ Animals are born with a random set of genes (used for turning) and a random name
 
 On each tick an animal will attempt to eat. If there is no food it will try to reproduce. If it does not have enough energy for reproduction the animal will rotate (based on its genes) and move one.
 
-When an animal reproduces, its offspring is a copy of the parent. The child  will have a mutated gene and a newly generated name based on the parent's name.
+When an animal reproduces, its offspring is a copy of the parent. The child will have a mutated gene and a newly generated name based on the parent's name.
 
 ### Narration
 
