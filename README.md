@@ -55,6 +55,19 @@ The narration code serves this role.  It aggregates and summarizes plant growth,
 > Most Ashy Building's arm falls off and grows into another animal called 
 > Colossal Ashy Building.
 
+## What is a Fluid Views Tribune Anyways?
+
+That's easy! We looked up each of our addresses on http://what3words.com/ and James' address was way cooler than Paul's, plus James has a better office.
+
+James Edward Gray II james@graysoftinc.com @JEG2
+
+James possess infinite wisdom and willpower when it comes to programming challenges giving him the ability to perform massive refactors holding everything in his brain (and a little help from the compiler).
+
+
+Paul Dawson paul@into.computer @piisalie
+
+Paul keeps his cell phone in the microwave while he sleeps and loves the sounds supervision trees make in the Autumn winds. He doesn't have the most clever solutions and usually just brute forces his way through everything.
+
 ## Credit
 
 The simulation is inspired from an exercise in Land of Lisp:
