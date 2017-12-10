@@ -39,6 +39,6 @@ NAME took a journey to TO_REGION.
 NAME has traveled DISTANCE to wind up in the TO_REGION.
 NAME has reached a strange new land.
 wandering:
-NAME is wandering aimlessly through TO_REGION.
+NAME is wandering aimlessly through the TO_REGION.
 NAME moves DISTANCE to wind up essentially back where they started.
-NAME desperately searches for food in TO_REGION.
+NAME desperately searches for food in the TO_REGION.

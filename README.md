@@ -63,7 +63,6 @@ James Edward Gray II james@graysoftinc.com @JEG2
 
 James possess infinite wisdom and willpower when it comes to programming challenges giving him the ability to perform massive refactors holding everything in his brain (and a little help from the compiler).
 
-
 Paul Dawson paul@into.computer @piisalie
 
 Paul keeps his cell phone in the microwave while he sleeps and loves the sounds supervision trees make in the Autumn winds. He doesn't have the most clever solutions and usually just brute forces his way through everything.
